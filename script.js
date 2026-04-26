@@ -109,12 +109,23 @@ async function getWeather(city) {
         weatherCard.classList.remove('hidden');
         tempToggle.classList.remove('hidden');
 
+        // Temperature Alert
+        const tempAlert = document.getElementById('tempAlert');
+        if (currentTempC > 40) {
+            tempAlert.classList.remove('hidden');
+            tempAlert.classList.add('flex');
+        } else {
+            tempAlert.classList.add('hidden');
+            tempAlert.classList.remove('flex');
+        }
+
     } catch (error) {
         console.error("Weather App Error:", error);
         
         // Reset UI on error
         weatherCard.classList.add('hidden');
         placeholderCard.classList.remove('hidden');
+        document.getElementById('tempAlert').classList.add('hidden');
         
         // Show specific error message
         errorMessage.innerText = "City not found. Please try again.";
