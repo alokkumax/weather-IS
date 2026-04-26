@@ -12,6 +12,28 @@ function getWeather(city) {
         .then(response => response.json())
         .then(data => {
             console.log("Weather Data Received:", data);
+            
+            // UI Elements
+            const placeholderCard = document.getElementById('placeholderCard');
+            const weatherCard = document.getElementById('weatherCard');
+            const cityName = document.getElementById('cityName');
+            const temperature = document.getElementById('temperature');
+            const condition = document.getElementById('condition');
+            const humidity = document.getElementById('humidity');
+            const wind = document.getElementById('wind');
+            const dateTime = document.getElementById('dateTime');
+
+            // Update Text Content
+            cityName.innerText = data.location.name;
+            dateTime.innerText = data.location.localtime;
+            temperature.innerText = `${Math.round(data.current.temp_c)}°C`;
+            condition.innerText = data.current.condition.text;
+            humidity.innerText = `${data.current.humidity}%`;
+            wind.innerText = `${data.current.wind_kph} km/h`;
+
+            // Toggle Visibility
+            placeholderCard.classList.add('hidden');
+            weatherCard.classList.remove('hidden');
         })
         .catch(error => {
             console.error("Error fetching weather:", error);

@@ -102,7 +102,7 @@
             <section class="lg:col-span-8">
                 <div id="weatherDisplay" class="h-full">
                     <!-- Placeholder State -->
-                    <div
+                    <div id="placeholderCard"
                         class="bg-white rounded-3xl border-2 border-dashed border-slate-200 h-full flex flex-col items-center justify-center p-12 text-center min-h-[400px]">
                         <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-4xl mb-6">
                             ☁️
@@ -113,46 +113,34 @@
                         </p>
                     </div>
 
-                    <!-- This is how the Weather Card will look once data is loaded (hidden for now) -->
-                    <!-- 
-                    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                    <!-- Weather Card -->
+                    <div id="weatherCard" class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hidden animate-fade-in-up">
                         <div class="bg-gradient-to-r from-brand-primary to-brand-secondary p-8 text-white relative">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h2 class="text-3xl font-bold mb-1">London</h2>
-                                    <p class="text-brand-light/80">Monday, 24 May 2024</p>
+                                    <h2 id="cityName" class="text-3xl font-bold mb-1">City Name</h2>
+                                    <p id="dateTime" class="text-brand-light/80">Date and Time</p>
                                 </div>
-                                <div class="text-6xl">☀️</div>
+                                <div id="weatherIcon" class="text-6xl">☀️</div>
                             </div>
                             <div class="mt-12 flex items-end gap-4">
-                                <span class="text-7xl font-bold">24°C</span>
-                                <span class="text-xl pb-2">Clear Sky</span>
+                                <span id="temperature" class="text-7xl font-bold">--°C</span>
+                                <span id="condition" class="text-xl pb-2">Condition</span>
                             </div>
                         </div>
-                        <div class="p-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="p-8 grid grid-cols-2 md:grid-cols-2 gap-6">
                             <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
                                 <span class="text-2xl mb-2">💧</span>
                                 <span class="text-slate-400 text-xs uppercase font-semibold">Humidity</span>
-                                <span class="text-lg font-bold">64%</span>
+                                <span id="humidity" class="text-lg font-bold">--%</span>
                             </div>
                             <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
                                 <span class="text-2xl mb-2">🌬️</span>
                                 <span class="text-slate-400 text-xs uppercase font-semibold">Wind</span>
-                                <span class="text-lg font-bold">12 km/h</span>
-                            </div>
-                            <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
-                                <span class="text-2xl mb-2">🌡️</span>
-                                <span class="text-slate-400 text-xs uppercase font-semibold">Pressure</span>
-                                <span class="text-lg font-bold">1012 hPa</span>
-                            </div>
-                            <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
-                                <span class="text-2xl mb-2">👁️</span>
-                                <span class="text-slate-400 text-xs uppercase font-semibold">Visibility</span>
-                                <span class="text-lg font-bold">10 km</span>
+                                <span id="wind" class="text-lg font-bold">-- km/h</span>
                             </div>
                         </div>
                     </div>
-                    -->
                 </div>
             </section>
         </div>
