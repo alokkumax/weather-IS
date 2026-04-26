@@ -1,8 +1,24 @@
 var apiKey = "e2f05c7c5c7b4ba78fe70311262604";
+let currentTempC = null;
+let isCelsius = true;
 
 /**
  * Weather Dashboard - Script
  */
+
+function updateTemperatureUI() {
+    const temperature = document.getElementById('temperature');
+    const tempToggle = document.getElementById('tempToggle');
+    
+    if (isCelsius) {
+        temperature.innerText = `${Math.round(currentTempC)}°C`;
+        tempToggle.innerText = "Switch to °F";
+    } else {
+        const tempF = (currentTempC * 9/5) + 32;
+        temperature.innerText = `${Math.round(tempF)}°F`;
+        tempToggle.innerText = "Switch to °C";
+    }
+}
 
 // saving recent searches
 function saveRecentSearch(city) {
@@ -71,11 +87,14 @@ async function getWeather(city) {
         const wind = document.getElementById('wind');
         const dateTime = document.getElementById('dateTime');
         const weatherIcon = document.getElementById('weatherIcon');
+        const tempToggle = document.getElementById('tempToggle');
 
         // Update Content
+        currentTempC = data.current.temp_c;
+        updateTemperatureUI();
+        
         cityName.innerText = data.location.name;
         dateTime.innerText = data.location.localtime;
-        temperature.innerText = `${Math.round(data.current.temp_c)}°C`;
         condition.innerText = data.current.condition.text;
         humidity.innerText = `${data.current.humidity}%`;
         wind.innerText = `${data.current.wind_kph} km/h`;
@@ -88,6 +107,7 @@ async function getWeather(city) {
         errorMessage.classList.add('hidden');
         placeholderCard.classList.add('hidden');
         weatherCard.classList.remove('hidden');
+        tempToggle.classList.remove('hidden');
 
     } catch (error) {
         console.error("Weather App Error:", error);
@@ -111,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayRecentSearches();
     const historyDropdown = document.getElementById('historyDropdown');
+    const tempToggle = document.getElementById('tempToggle');
 
     const handleSearch = () => {
         const city = cityInput.value.trim();
@@ -143,6 +164,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide error when user starts typing
     cityInput.addEventListener('input', () => {
         errorMessage.classList.add('hidden');
+    });
+
+    // Toggle Temperature Unit
+    tempToggle.addEventListener('click', () => {
+        if (currentTempC !== null) {
+            isCelsius = !isCelsius;
+            updateTemperatureUI();
+        }
     });
 
     searchBtn.addEventListener('click', handleSearch);

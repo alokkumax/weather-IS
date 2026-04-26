@@ -120,9 +120,12 @@
                                 </div>
                                 <img id="weatherIcon" src="" alt="Weather Icon" class="w-16 h-16 object-contain">
                             </div>
-                            <div class="mt-12 flex items-end gap-4">
-                                <span id="temperature" class="text-7xl font-bold">--°C</span>
-                                <span id="condition" class="text-xl pb-2">Condition</span>
+                            <div class="mt-12 flex items-end justify-between">
+                                <div class="flex items-end gap-4">
+                                    <span id="temperature" class="text-7xl font-bold">--°C</span>
+                                    <span id="condition" class="text-xl pb-2">Condition</span>
+                                </div>
+                                <button id="tempToggle" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-lg text-sm border border-white/30 transition-all hidden">Switch to °F</button>
                             </div>
                         </div>
                         <div class="p-8 grid grid-cols-2 md:grid-cols-2 gap-6">
