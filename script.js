@@ -2,10 +2,15 @@ var apiKey = "e2f05c7c5c7b4ba78fe70311262604";
 let currentTempC = null;
 let isCelsius = true;
 
-/**
- * Weather Dashboard - Script
- */
+/* 
+  Weather App Logic 
+  - Gets data from the API
+  - Changes colors based on weather
+  - Saves what you searched before
+  - Finds your location
+*/
 
+// this updates the temperature text when we switch between C and F
 function updateTemperatureUI() {
     const temperature = document.getElementById('temperature');
     const tempToggle = document.getElementById('tempToggle');
@@ -14,25 +19,28 @@ function updateTemperatureUI() {
         temperature.innerText = `${Math.round(currentTempC)}°C`;
         tempToggle.innerText = "Switch to °F";
     } else {
+        // basic formula to convert C to F
         const tempF = (currentTempC * 9/5) + 32;
         temperature.innerText = `${Math.round(tempF)}°F`;
         tempToggle.innerText = "Switch to °C";
     }
 }
 
+// this changes the card colors so it looks cool when it's raining or sunny
 function updateWeatherTheme(condition) {
     const cardTop = document.querySelector('#weatherCard > div');
     const lowerCondition = condition.toLowerCase();
     
-    // Default theme classes
+    // setting up our color options
     const defaultClasses = ['from-brand-primary', 'to-brand-secondary'];
     const rainClasses = ['from-blue-500', 'to-blue-700'];
     const sunnyClasses = ['from-orange-400', 'to-yellow-500'];
     const cloudClasses = ['from-slate-500', 'to-slate-700'];
 
-    // Remove all possible theme classes
+    // remove any old colors first
     cardTop.classList.remove(...defaultClasses, ...rainClasses, ...sunnyClasses, ...cloudClasses);
     
+    // check what the weather is and pick the right color
     if (lowerCondition.includes('rain')) {
         cardTop.classList.add(...rainClasses);
     } else if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
@@ -44,9 +52,10 @@ function updateWeatherTheme(condition) {
     }
 }
 
+// creating those 5 little cards for the next few days
 function displayForecast(forecastData) {
     const forecastContainer = document.getElementById('forecastContainer');
-    forecastContainer.innerHTML = ''; // Clear dummy cards
+    forecastContainer.innerHTML = ''; // clear out the old ones
 
     forecastData.forEach(day => {
         const date = new Date(day.date);
@@ -74,17 +83,16 @@ function displayForecast(forecastData) {
     });
 }
 
-// saving recent searches
+// saving the cities you search for in the browser memory
 function saveRecentSearch(city) {
     let history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
     
-    // Remove if already exists (avoid duplicates and update position)
+    // don't save the same city twice, just move it to the top
     history = history.filter(item => item.toLowerCase() !== city.toLowerCase());
     
-    // Add to start
-    history.unshift(city);
+    history.unshift(city); // put it at the start
     
-    // Keep only last 5
+    // we only want to keep the last 5 cities
     if (history.length > 5) {
         history = history.slice(0, 5);
     }
@@ -93,6 +101,7 @@ function saveRecentSearch(city) {
     displayRecentSearches();
 }
 
+// showing those saved cities as buttons so you can click them easily
 function displayRecentSearches() {
     const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
     const container = document.getElementById('recentSearches');
@@ -111,27 +120,26 @@ function displayRecentSearches() {
     `).join('');
 }
 
-// getting weather data from API
+// the main part - fetching the weather data from the API
 async function getWeather(city) {
     const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=5`;
     const errorMessage = document.getElementById('errorMessage');
+    const errorText = document.getElementById('errorText');
     const placeholderCard = document.getElementById('placeholderCard');
     const weatherCard = document.getElementById('weatherCard');
 
     try {
         const response = await fetch(apiUrl);
         
+        // if the API can't find the city, we throw an error
         if (!response.ok) {
             throw new Error("City not found");
         }
 
         const data = await response.json();
-        console.log("Weather Data Received:", data);
-        console.log("Forecast Data:", data.forecast.forecastday);
         
-        // UI Elements
+        // getting all our HTML elements
         const cityName = document.getElementById('cityName');
-        const temperature = document.getElementById('temperature');
         const condition = document.getElementById('condition');
         const humidity = document.getElementById('humidity');
         const wind = document.getElementById('wind');
@@ -139,7 +147,7 @@ async function getWeather(city) {
         const weatherIcon = document.getElementById('weatherIcon');
         const tempToggle = document.getElementById('tempToggle');
 
-        // Update Content
+        // updating today's info
         currentTempC = data.current.temp_c;
         updateTemperatureUI();
         
@@ -151,18 +159,20 @@ async function getWeather(city) {
         weatherIcon.src = `https:${data.current.condition.icon}`;
         weatherIcon.alt = data.current.condition.text;
 
+        // running our theme and forecast functions
         updateWeatherTheme(data.current.condition.text);
         displayForecast(data.forecast.forecastday);
 
+        // saving the city to our history list
         saveRecentSearch(data.location.name);
 
-        // Toggle Visibility
+        // hide the empty state and show the weather card
         errorMessage.classList.add('hidden');
         placeholderCard.classList.add('hidden');
         weatherCard.classList.remove('hidden');
         tempToggle.classList.remove('hidden');
 
-        // Temperature Alert
+        // if it's super hot (over 40), show a warning
         const tempAlert = document.getElementById('tempAlert');
         if (currentTempC > 40) {
             tempAlert.classList.remove('hidden');
@@ -173,28 +183,30 @@ async function getWeather(city) {
         }
 
     } catch (error) {
-        console.error("Weather App Error:", error);
+        console.error("Oops, something went wrong:", error);
         
-        // Reset UI on error
+        // if there's an error, hide the weather and show the placeholder again
         weatherCard.classList.add('hidden');
         placeholderCard.classList.remove('hidden');
         document.getElementById('tempAlert').classList.add('hidden');
         
-        // Show specific error message
-        errorMessage.innerText = "Please enter a correct city name.";
+        // tell the user to check the spelling
+        errorText.innerText = "Please enter a correct city name.";
         errorMessage.classList.remove('hidden');
     }
 }
 
+// wait for the page to load before doing anything
 document.addEventListener('DOMContentLoaded', () => {
     const searchBtn = document.getElementById('searchBtn');
     const locationBtn = document.getElementById('locationBtn');
     const cityInput = document.getElementById('cityInput');
-
     const errorMessage = document.getElementById('errorMessage');
-
-    displayRecentSearches();
+    const errorText = document.getElementById('errorText');
     const tempToggle = document.getElementById('tempToggle');
+
+    // show saved cities right away
+    displayRecentSearches();
 
     const handleSearch = () => {
         const city = cityInput.value.trim();
@@ -202,17 +214,17 @@ document.addEventListener('DOMContentLoaded', () => {
             errorMessage.classList.add('hidden');
             getWeather(city);
         } else {
-            errorMessage.innerText = "Please enter a city name";
+            errorText.innerText = "Please enter a city name";
             errorMessage.classList.remove('hidden');
         }
     };
 
-    // Hide error when user starts typing
+    // clear the error message as soon as they start typing
     cityInput.addEventListener('input', () => {
         errorMessage.classList.add('hidden');
     });
 
-    // Toggle Temperature Unit
+    // what happens when you click the C/F toggle
     tempToggle.addEventListener('click', () => {
         if (currentTempC !== null) {
             isCelsius = !isCelsius;
@@ -220,8 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // click the search button
     searchBtn.addEventListener('click', handleSearch);
 
+    // finding where the user is located
     locationBtn.addEventListener('click', () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -231,20 +245,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
-                    errorMessage.innerText = "Location access denied. Please search manually.";
+                    errorText.innerText = "Location access denied. Please search manually.";
                     errorMessage.classList.remove('hidden');
                 }
             );
         } else {
-            errorMessage.innerText = "Geolocation is not supported by your browser.";
+            errorText.innerText = "Geolocation is not supported by your browser.";
             errorMessage.classList.remove('hidden');
         }
     });
 
+    // search when you hit the Enter key
     cityInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             handleSearch();
         }
     });
 });
-
