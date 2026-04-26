@@ -23,14 +23,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const locationBtn = document.getElementById('locationBtn');
     const cityInput = document.getElementById('cityInput');
 
+    const errorMessage = document.getElementById('errorMessage');
+
     const handleSearch = () => {
         const city = cityInput.value.trim();
         if (city) {
+            errorMessage.classList.add('hidden');
             getWeather(city);
         } else {
-            alert('Please enter a city name');
+            errorMessage.classList.remove('hidden');
         }
     };
+
+    // Hide error when user starts typing
+    cityInput.addEventListener('input', () => {
+        errorMessage.classList.add('hidden');
+    });
 
     searchBtn.addEventListener('click', handleSearch);
 
