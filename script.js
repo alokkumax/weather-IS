@@ -25,20 +25,25 @@ function saveRecentSearch(city) {
 
 function displayRecentSearches() {
     const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
-    const container = document.getElementById('recentSearches');
-    const itemsList = container.querySelector('.flex-wrap');
+    const dropdown = document.getElementById('historyDropdown');
 
     if (history.length === 0) {
-        container.classList.add('hidden');
+        dropdown.classList.add('hidden');
         return;
     }
 
-    container.classList.remove('hidden');
-    itemsList.innerHTML = history.map(city => `
-        <button class="px-3 py-1 bg-slate-100 hover:bg-brand-primary/10 hover:text-brand-primary rounded-lg text-sm text-slate-600 transition-all font-medium border border-transparent hover:border-brand-primary/20" onclick="getWeather('${city}')">
+    dropdown.innerHTML = history.map(city => `
+        <li class="px-4 py-3 hover:bg-slate-50 cursor-pointer text-slate-600 border-b border-slate-100 last:border-none transition-colors" 
+            onmousedown="selectCity('${city}')">
             ${city}
-        </button>
+        </li>
     `).join('');
+}
+
+// Function to handle city selection from dropdown
+function selectCity(city) {
+    document.getElementById('cityInput').value = city;
+    getWeather(city);
 }
 
 // getting weather data from API
@@ -105,17 +110,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('errorMessage');
 
     displayRecentSearches();
+    const historyDropdown = document.getElementById('historyDropdown');
 
     const handleSearch = () => {
         const city = cityInput.value.trim();
         if (city) {
             errorMessage.classList.add('hidden');
+            historyDropdown.classList.add('hidden');
             getWeather(city);
         } else {
             errorMessage.innerText = "Please enter a city name";
             errorMessage.classList.remove('hidden');
         }
     };
+
+    // Show dropdown on focus
+    cityInput.addEventListener('focus', () => {
+        const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
+        if (history.length > 0) {
+            historyDropdown.classList.remove('hidden');
+            displayRecentSearches();
+        }
+    });
+
+    // Hide dropdown on blur
+    cityInput.addEventListener('blur', () => {
+        setTimeout(() => {
+            historyDropdown.classList.add('hidden');
+        }, 200);
+    });
 
     // Hide error when user starts typing
     cityInput.addEventListener('input', () => {

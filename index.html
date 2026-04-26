@@ -61,6 +61,11 @@
                             <input type="text" id="cityInput" placeholder="Enter city name..."
                                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary transition-all text-slate-700">
                             <p id="errorMessage" class="text-red-500 text-xs mt-1 ml-2 hidden">Please enter a city name</p>
+                            
+                            <!-- Dropdown for recent searches -->
+                            <ul id="historyDropdown" class="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 hidden overflow-hidden">
+                                <!-- Cities will be injected here -->
+                            </ul>
                         </div>
                         <button id="searchBtn"
                             class="w-full bg-brand-primary hover:bg-brand-secondary text-white font-medium py-3 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-95 shadow-lg shadow-brand-primary/20">
@@ -77,14 +82,6 @@
                         </button>
                     </div>
 
-                    <!-- Placeholder for search history/dropdown -->
-                    <div id="recentSearches" class="mt-6 pt-6 border-t border-slate-100 hidden">
-                        <h3 class="text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">Recent Searches
-                        </h3>
-                        <div class="flex flex-wrap gap-2">
-                            <!-- History items will go here -->
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Empty space for info card -->
