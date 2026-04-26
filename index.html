@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard | Modern Forecast App</title>
+    <meta name="description"
+        content="A sleek, modern weather dashboard providing real-time forecasts and 5-day weather data.">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            primary: '#67889f',
+                            secondary: '#4a6b82',
+                            light: '#e2e8f0',
+                            dark: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 font-outfit text-brand-dark min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-brand-primary flex items-center gap-2">
+                <span>🌤️</span> Weather Dashboard
+            </h1>
+            <div class="text-slate-400 text-sm hidden sm:block">
+                Stay ahead of the storm
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- Left Section: Search & Actions -->
+            <section class="lg:col-span-4 flex flex-col gap-6">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 transition-all hover:shadow-md">
+                    <h2 class="text-lg font-semibold mb-4 text-slate-700">Search Location</h2>
+                    <div class="flex flex-col gap-4">
+                        <div class="relative">
+                            <input type="text" id="cityInput" placeholder="Enter city name..."
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary transition-all text-slate-700">
+                        </div>
+                        <button id="searchBtn"
+                            class="w-full bg-brand-primary hover:bg-brand-secondary text-white font-medium py-3 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-95 shadow-lg shadow-brand-primary/20">
+                            <span>🔍</span> Search City
+                        </button>
+                        <div class="relative py-2 flex items-center">
+                            <div class="flex-grow border-t border-slate-200"></div>
+                            <span class="flex-shrink mx-4 text-slate-400 text-sm">OR</span>
+                            <div class="flex-grow border-t border-slate-200"></div>
+                        </div>
+                        <button id="locationBtn"
+                            class="w-full bg-white border-2 border-brand-primary/30 text-brand-primary hover:bg-brand-primary/5 font-medium py-3 rounded-2xl transition-all flex justify-center items-center gap-2 active:scale-95">
+                            <span>📍</span> Use Current Location
+                        </button>
+                    </div>
+
+                    <!-- Placeholder for search history/dropdown -->
+                    <div id="recentSearches" class="mt-6 pt-6 border-t border-slate-100 hidden">
+                        <h3 class="text-sm font-medium text-slate-500 mb-3 uppercase tracking-wider">Recent Searches
+                        </h3>
+                        <div class="flex flex-wrap gap-2">
+                            <!-- History items will go here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty space for info card -->
+                <div
+                    class="bg-gradient-to-br from-brand-primary to-brand-secondary p-6 rounded-3xl text-white shadow-xl">
+                    <h3 class="font-semibold mb-2">Weather Tip</h3>
+                    <p class="text-brand-light/90 text-sm leading-relaxed">
+                        Search for your city to get instant weather updates and a detailed 5-day forecast. Don't forget
+                        to check the humidity!
+                    </p>
+                </div>
+            </section>
+
+            <!-- Right Section: Current Weather -->
+            <section class="lg:col-span-8">
+                <div id="weatherDisplay" class="h-full">
+                    <!-- Placeholder State -->
+                    <div
+                        class="bg-white rounded-3xl border-2 border-dashed border-slate-200 h-full flex flex-col items-center justify-center p-12 text-center min-h-[400px]">
+                        <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-4xl mb-6">
+                            ☁️
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-2">No City Selected</h3>
+                        <p class="text-slate-500 max-w-xs">
+                            Search for a city or use your current location to see the weather details.
+                        </p>
+                    </div>
+
+                    <!-- This is how the Weather Card will look once data is loaded (hidden for now) -->
+                    <!-- 
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="bg-gradient-to-r from-brand-primary to-brand-secondary p-8 text-white relative">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h2 class="text-3xl font-bold mb-1">London</h2>
+                                    <p class="text-brand-light/80">Monday, 24 May 2024</p>
+                                </div>
+                                <div class="text-6xl">☀️</div>
+                            </div>
+                            <div class="mt-12 flex items-end gap-4">
+                                <span class="text-7xl font-bold">24°C</span>
+                                <span class="text-xl pb-2">Clear Sky</span>
+                            </div>
+                        </div>
+                        <div class="p-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
+                                <span class="text-2xl mb-2">💧</span>
+                                <span class="text-slate-400 text-xs uppercase font-semibold">Humidity</span>
+                                <span class="text-lg font-bold">64%</span>
+                            </div>
+                            <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
+                                <span class="text-2xl mb-2">🌬️</span>
+                                <span class="text-slate-400 text-xs uppercase font-semibold">Wind</span>
+                                <span class="text-lg font-bold">12 km/h</span>
+                            </div>
+                            <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
+                                <span class="text-2xl mb-2">🌡️</span>
+                                <span class="text-slate-400 text-xs uppercase font-semibold">Pressure</span>
+                                <span class="text-lg font-bold">1012 hPa</span>
+                            </div>
+                            <div class="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl">
+                                <span class="text-2xl mb-2">👁️</span>
+                                <span class="text-slate-400 text-xs uppercase font-semibold">Visibility</span>
+                                <span class="text-lg font-bold">10 km</span>
+                            </div>
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </section>
+        </div>
+
+        <!-- 5-Day Forecast Section -->
+        <section class="mt-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">5-Day Forecast</h2>
+                <div class="h-px flex-grow bg-slate-200 ml-6 hidden sm:block"></div>
+            </div>
+
+            <div id="forecastContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Dummy Forecast Cards -->
+                <div
+                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md">
+                    <span class="text-slate-500 font-medium mb-3">Tue</span>
+                    <div class="text-3xl mb-4">🌦️</div>
+                    <div class="text-xl font-bold text-brand-dark mb-1">22°C</div>
+                    <span class="text-xs text-slate-400 font-medium">Showers</span>
+                </div>
+                <div
+                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md">
+                    <span class="text-slate-500 font-medium mb-3">Wed</span>
+                    <div class="text-3xl mb-4">☀️</div>
+                    <div class="text-xl font-bold text-brand-dark mb-1">26°C</div>
+                    <span class="text-xs text-slate-400 font-medium">Sunny</span>
+                </div>
+                <div
+                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md">
+                    <span class="text-slate-500 font-medium mb-3">Thu</span>
+                    <div class="text-3xl mb-4">☁️</div>
+                    <div class="text-xl font-bold text-brand-dark mb-1">21°C</div>
+                    <span class="text-xs text-slate-400 font-medium">Cloudy</span>
+                </div>
+                <div
+                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md">
+                    <span class="text-slate-500 font-medium mb-3">Fri</span>
+                    <div class="text-3xl mb-4">⛈️</div>
+                    <div class="text-xl font-bold text-brand-dark mb-1">19°C</div>
+                    <span class="text-xs text-slate-400 font-medium">Storms</span>
+                </div>
+                <div
+                    class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md">
+                    <span class="text-slate-500 font-medium mb-3">Sat</span>
+                    <div class="text-3xl mb-4">🌤️</div>
+                    <div class="text-xl font-bold text-brand-dark mb-1">23°C</div>
+                    <span class="text-xs text-slate-400 font-medium">Partly Cloudy</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm">
+                &copy; 2026 Weather Dashboard.
+            </p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
