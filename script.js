@@ -20,6 +20,30 @@ function updateTemperatureUI() {
     }
 }
 
+function updateWeatherTheme(condition) {
+    const cardTop = document.querySelector('#weatherCard > div');
+    const lowerCondition = condition.toLowerCase();
+    
+    // Default theme classes
+    const defaultClasses = ['from-brand-primary', 'to-brand-secondary'];
+    const rainClasses = ['from-blue-500', 'to-blue-700'];
+    const sunnyClasses = ['from-orange-400', 'to-yellow-500'];
+    const cloudClasses = ['from-slate-500', 'to-slate-700'];
+
+    // Remove all possible theme classes
+    cardTop.classList.remove(...defaultClasses, ...rainClasses, ...sunnyClasses, ...cloudClasses);
+    
+    if (lowerCondition.includes('rain')) {
+        cardTop.classList.add(...rainClasses);
+    } else if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
+        cardTop.classList.add(...sunnyClasses);
+    } else if (lowerCondition.includes('cloud')) {
+        cardTop.classList.add(...cloudClasses);
+    } else {
+        cardTop.classList.add(...defaultClasses);
+    }
+}
+
 // saving recent searches
 function saveRecentSearch(city) {
     let history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
@@ -100,6 +124,8 @@ async function getWeather(city) {
         wind.innerText = `${data.current.wind_kph} km/h`;
         weatherIcon.src = `https:${data.current.condition.icon}`;
         weatherIcon.alt = data.current.condition.text;
+
+        updateWeatherTheme(data.current.condition.text);
 
         saveRecentSearch(data.location.name);
 
