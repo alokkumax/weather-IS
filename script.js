@@ -50,14 +50,24 @@ function displayForecast(forecastData) {
 
     forecastData.forEach(day => {
         const date = new Date(day.date);
-        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         
         const cardHTML = `
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md animate-fade-in-up">
-                <span class="text-slate-500 font-medium mb-3">${dayName}</span>
-                <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" class="w-12 h-12 mb-4">
-                <div class="text-xl font-bold text-brand-dark mb-1">${Math.round(day.day.avgtemp_c)}°C</div>
-                <span class="text-xs text-slate-400 font-medium">${day.day.condition.text}</span>
+            <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md animate-fade-in-up">
+                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">${dateStr}</span>
+                <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" class="w-12 h-12 mb-2">
+                <div class="text-xl font-bold text-brand-dark mb-3">${Math.round(day.day.avgtemp_c)}°C</div>
+                
+                <div class="w-full pt-3 border-t border-slate-50 flex flex-col gap-1 text-[10px] font-semibold uppercase tracking-tight">
+                    <div class="flex justify-between text-slate-400">
+                        <span>Wind</span>
+                        <span class="text-slate-600">${day.day.maxwind_kph}km/h</span>
+                    </div>
+                    <div class="flex justify-between text-slate-400">
+                        <span>Humidity</span>
+                        <span class="text-slate-600">${day.day.avghumidity}%</span>
+                    </div>
+                </div>
             </div>
         `;
         forecastContainer.insertAdjacentHTML('beforeend', cardHTML);
