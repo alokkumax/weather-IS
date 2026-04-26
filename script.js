@@ -44,6 +44,26 @@ function updateWeatherTheme(condition) {
     }
 }
 
+function displayForecast(forecastData) {
+    const forecastContainer = document.getElementById('forecastContainer');
+    forecastContainer.innerHTML = ''; // Clear dummy cards
+
+    forecastData.forEach(day => {
+        const date = new Date(day.date);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        
+        const cardHTML = `
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:-translate-y-1 hover:shadow-md animate-fade-in-up">
+                <span class="text-slate-500 font-medium mb-3">${dayName}</span>
+                <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" class="w-12 h-12 mb-4">
+                <div class="text-xl font-bold text-brand-dark mb-1">${Math.round(day.day.avgtemp_c)}°C</div>
+                <span class="text-xs text-slate-400 font-medium">${day.day.condition.text}</span>
+            </div>
+        `;
+        forecastContainer.insertAdjacentHTML('beforeend', cardHTML);
+    });
+}
+
 // saving recent searches
 function saveRecentSearch(city) {
     let history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
@@ -65,30 +85,25 @@ function saveRecentSearch(city) {
 
 function displayRecentSearches() {
     const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
-    const dropdown = document.getElementById('historyDropdown');
+    const container = document.getElementById('recentSearches');
+    const itemsList = container.querySelector('.flex-wrap');
 
     if (history.length === 0) {
-        dropdown.classList.add('hidden');
+        container.classList.add('hidden');
         return;
     }
 
-    dropdown.innerHTML = history.map(city => `
-        <li class="px-4 py-3 hover:bg-slate-50 cursor-pointer text-slate-600 border-b border-slate-100 last:border-none transition-colors" 
-            onmousedown="selectCity('${city}')">
+    container.classList.remove('hidden');
+    itemsList.innerHTML = history.map(city => `
+        <button class="px-3 py-1 bg-slate-100 hover:bg-brand-primary/10 hover:text-brand-primary rounded-lg text-sm text-slate-600 transition-all font-medium border border-transparent hover:border-brand-primary/20" onclick="getWeather('${city}')">
             ${city}
-        </li>
+        </button>
     `).join('');
-}
-
-// Function to handle city selection from dropdown
-function selectCity(city) {
-    document.getElementById('cityInput').value = city;
-    getWeather(city);
 }
 
 // getting weather data from API
 async function getWeather(city) {
-    const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
+    const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=5`;
     const errorMessage = document.getElementById('errorMessage');
     const placeholderCard = document.getElementById('placeholderCard');
     const weatherCard = document.getElementById('weatherCard');
@@ -102,6 +117,7 @@ async function getWeather(city) {
 
         const data = await response.json();
         console.log("Weather Data Received:", data);
+        console.log("Forecast Data:", data.forecast.forecastday);
         
         // UI Elements
         const cityName = document.getElementById('cityName');
@@ -126,6 +142,7 @@ async function getWeather(city) {
         weatherIcon.alt = data.current.condition.text;
 
         updateWeatherTheme(data.current.condition.text);
+        displayForecast(data.forecast.forecastday);
 
         saveRecentSearch(data.location.name);
 
@@ -154,7 +171,7 @@ async function getWeather(city) {
         document.getElementById('tempAlert').classList.add('hidden');
         
         // Show specific error message
-        errorMessage.innerText = "City not found. Please try again.";
+        errorMessage.innerText = "Please enter a correct city name.";
         errorMessage.classList.remove('hidden');
     }
 }
@@ -167,36 +184,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMessage = document.getElementById('errorMessage');
 
     displayRecentSearches();
-    const historyDropdown = document.getElementById('historyDropdown');
     const tempToggle = document.getElementById('tempToggle');
 
     const handleSearch = () => {
         const city = cityInput.value.trim();
         if (city) {
             errorMessage.classList.add('hidden');
-            historyDropdown.classList.add('hidden');
             getWeather(city);
         } else {
             errorMessage.innerText = "Please enter a city name";
             errorMessage.classList.remove('hidden');
         }
     };
-
-    // Show dropdown on focus
-    cityInput.addEventListener('focus', () => {
-        const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
-        if (history.length > 0) {
-            historyDropdown.classList.remove('hidden');
-            displayRecentSearches();
-        }
-    });
-
-    // Hide dropdown on blur
-    cityInput.addEventListener('blur', () => {
-        setTimeout(() => {
-            historyDropdown.classList.add('hidden');
-        }, 200);
-    });
 
     // Hide error when user starts typing
     cityInput.addEventListener('input', () => {
