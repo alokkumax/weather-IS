@@ -4,6 +4,43 @@ var apiKey = "e2f05c7c5c7b4ba78fe70311262604";
  * Weather Dashboard - Script
  */
 
+// saving recent searches
+function saveRecentSearch(city) {
+    let history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
+    
+    // Remove if already exists (avoid duplicates and update position)
+    history = history.filter(item => item.toLowerCase() !== city.toLowerCase());
+    
+    // Add to start
+    history.unshift(city);
+    
+    // Keep only last 5
+    if (history.length > 5) {
+        history = history.slice(0, 5);
+    }
+    
+    localStorage.setItem('weatherHistory', JSON.stringify(history));
+    displayRecentSearches();
+}
+
+function displayRecentSearches() {
+    const history = JSON.parse(localStorage.getItem('weatherHistory')) || [];
+    const container = document.getElementById('recentSearches');
+    const itemsList = container.querySelector('.flex-wrap');
+
+    if (history.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+
+    container.classList.remove('hidden');
+    itemsList.innerHTML = history.map(city => `
+        <button class="px-3 py-1 bg-slate-100 hover:bg-brand-primary/10 hover:text-brand-primary rounded-lg text-sm text-slate-600 transition-all font-medium border border-transparent hover:border-brand-primary/20" onclick="getWeather('${city}')">
+            ${city}
+        </button>
+    `).join('');
+}
+
 // getting weather data from API
 async function getWeather(city) {
     const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
@@ -40,6 +77,8 @@ async function getWeather(city) {
         weatherIcon.src = `https:${data.current.condition.icon}`;
         weatherIcon.alt = data.current.condition.text;
 
+        saveRecentSearch(data.location.name);
+
         // Toggle Visibility
         errorMessage.classList.add('hidden');
         placeholderCard.classList.add('hidden');
@@ -64,6 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const cityInput = document.getElementById('cityInput');
 
     const errorMessage = document.getElementById('errorMessage');
+
+    displayRecentSearches();
 
     const handleSearch = () => {
         const city = cityInput.value.trim();
