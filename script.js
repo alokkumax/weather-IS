@@ -84,8 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
     searchBtn.addEventListener('click', handleSearch);
 
     locationBtn.addEventListener('click', () => {
-        // Geolocation will be handled in a later step
-        console.log("Location button clicked - API test only for now");
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    getWeather(`${latitude},${longitude}`);
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    errorMessage.innerText = "Location access denied. Please search manually.";
+                    errorMessage.classList.remove('hidden');
+                }
+            );
+        } else {
+            errorMessage.innerText = "Geolocation is not supported by your browser.";
+            errorMessage.classList.remove('hidden');
+        }
     });
 
     cityInput.addEventListener('keypress', (e) => {
