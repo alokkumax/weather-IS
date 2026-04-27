@@ -1,6 +1,7 @@
 # Weather Forecast Dashboard 🌦️
 
 **Repo Link:** [https://github.com/alokkumax/weather-IS](https://github.com/alokkumax/weather-IS)
+**Live Link:** https://weather-is-beta.vercel.app/
 
 Hey! This is a simple weather app I built using HTML, CSS (Tailwind), and JavaScript for IS-FSD. It's a clean dashboard that lets you check the weather anywhere in the world and also see a 5-day forecast.
 
